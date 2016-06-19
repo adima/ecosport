@@ -75,6 +75,7 @@
             <li><a href="#">Велосипедные дорожки</a></li>
             <li><a href="#">Футбольные поля</a></li>
           </ul>
+         <li><a href="#"><i class="fa fa-link"></i> <span>Статистика</span></a></li>		 
      	<li><a href="#"><i class="fa fa-link"></i> <span>О проекте</span></a></li>		
         </li>
       </ul>
@@ -253,27 +254,10 @@
     <script src="AdminLTE-2.3.3/bootstrap/js/bootstrap.min.js"></script>
 	<script>
 
-	var AdminLTEOptions = {
-		colors: {
-		    lightBlue: "#3c8dbc",
-		    red: "#f56954",
-		    green: "#00a65a",
-		    aqua: "#00c0ef",
-		    yellow: "#f39c12",
-		    blue: "#0073b7",
-		    navy: "#001F3F",
-		    teal: "#39CCCC",
-		    olive: "#3D9970",
-		    lime: "#01FF70",
-		    orange: "#FF851B",
-		    fuchsia: "#F012BE",
-		    purple: "#8E24AA",
-		    maroon: "#D81B60",
-		    black: "#222222",
-		    gray: "#d2d6de",
-		    redpurple: "#d02090"
-		  }
-  };
+		Number.prototype.toRadians = function(){
+		return this * Math.PI / 180;
+	};
+
 		var glob_json = {};
 
 		var map = L.map('map', {center: [55.684485,37.906519], zoom: 14});
@@ -320,7 +304,7 @@
 
 		var scl_lte = d3.scale.threshold()
 		.domain([51, 101, 151, 201, 301, 500])
-		.range(['green', 'yellow', 'orange', 'red', 'purple', 'redpurple'])
+		.range(['green', 'yellow', 'orange', 'red', 'purple', 'maroon'])
 
 		var scl_mess = d3.scale.threshold()
 		.domain([51, 101, 151, 201, 301, 500])
@@ -365,6 +349,27 @@
 		 // console.log(collection)
 		 glob_json = collection;
 	});
+
+	map.on("click", function(d) {
+		if (d.originalEvent.toElement.tagName != 'circle'){
+					glob_json.features.forEach(function(d_){d_.Dist = getDistance(d.latlng.lat, d.latlng.lng, d_.LatLng.lat, d_.LatLng.lng)  })}
+	})
+
+	function getDistance(lat1, lon1, lat2, lon2) {
+		var R = 6371e3; // metres
+		var φ1 = lat1.toRadians();
+		var φ2 = lat2.toRadians();
+		var Δφ = (lat2-lat1).toRadians();
+		var Δλ = (lon2-lon1).toRadians();
+
+		var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+		        Math.cos(φ1) * Math.cos(φ2) *
+		        Math.sin(Δλ/2) * Math.sin(Δλ/2);
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+		var d = R * c;
+		return d;
+	}
 
 /*
 		L.marker([51.5, -0.09]).addTo(mymap)
